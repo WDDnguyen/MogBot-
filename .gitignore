@@ -1,0 +1,13 @@
+# Ignore compiled python code
+*.pyc
+*.idea 
+*.__pycache__
+*.APIKey.py
+*.Token.Py
+
+
+#System Files
+*.DS_Store
+*._*
+
+
