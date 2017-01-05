@@ -22,13 +22,11 @@ class OpenWeatherController():
         return forecastRequestJson
 
     def fahrenheitToCelsius(self,valueOfFahrenheit):
-        fahrenheit = float(valueOfFahrenheit)
-        celsius = (fahrenheit - 32) / 18
+        celsius = (valueOfFahrenheit * 9/5) +32
         return celsius
 
     def celsiusToFahrenheit(self,valueOfCelsius):
-        celsius = float(valueOfCelsius)
-        fahrenheit = (celsius * 16) - 32
+        fahrenheit = (valueOfCelsius - 32) * 5/9
         return fahrenheit
 
     def currentWeather(self,cityName,areaName,APIKey):

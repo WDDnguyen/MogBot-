@@ -3,6 +3,7 @@ import Token
 from MagicConchShell import MagicConchShell
 from OpenWeatherController import OpenWeatherController
 
+
 token = Token.acquireToken()
 bot = discord.Client()
 
@@ -25,6 +26,8 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
+#HELP COMMAND
+
     if message.content.startswith('!bot'):
         response = "\n"
         for item in listOfCommands :
@@ -32,6 +35,7 @@ async def on_message(message):
 
         await bot.send_message(message.channel,"Here's a list of commands I can execute :" + response)
 
+#MAGIC CONCH SHELL MODE
     elif message.content.startswith('!magic'):
         await bot.send_message(message.channel, "I'm holding a magic conch shell\n " + "What do you want to ask the magic conch shell ?\n")
 
@@ -43,6 +47,8 @@ async def on_message(message):
             response = magicConchShellFunction.responseToCall()
             await bot.send_message(message.channel, str(response))
 
+
+#WEATHER MODE
     elif message.content.startswith('!weather'):
         await bot.send_message(message.channel, "Which weather command do you want me to execute?")
 
@@ -57,26 +63,31 @@ async def on_message(message):
                 await bot.send_message(message.channel, "What is the value of fahrenheit to convert to celsius ?")
 
                 value = await bot.wait_for_message(timeout=15.0, author = message.author)
-                value = str(value.content)
-
                 if value is None:
                     await bot.send_message(message.channel,"There was no message")
                 else:
-                    response = openWeatherController.celsiusToFahrenheit(value)
-                    await bot.send_message(message.channel, str(response))
+                    try:
+                        value = float(value.content)
+                        response = openWeatherController.celsiusToFahrenheit(value)
+                        await bot.send_message(message.channel, str(response))
 
+                    except ValueError:
+                        await bot.send_message(message.channel, "This isn't an numerical value, please try again")
 
             elif ask == '!fahrenheit':
-                await bot.send_message(message.channel, "What is the value of celsius to convert to farenheit ?")
+                await bot.send_message(message.channel, "What is the value of celsius to convert to fahrenheit?")
 
                 value = await bot.wait_for_message(timeout=15.0, author=message.author)
-                value = str(value.content)
-
                 if value is None:
                     await bot.send_message(message.channel, "There was no message")
                 else:
-                    response = openWeatherController.celsiusToFahrenheit(value)
-                    await bot.send_message(message.channel, str(response))
+                    try:
+                        value = float(value.content)
+                        response = openWeatherController.fahrenheitToCelsius(value)
+                        await bot.send_message(message.channel, str(response))
+
+                    except ValueError:
+                        await bot.send_message(message.channel, "This isn't an numerical value, please try again")
 
             elif ask == '!current' :
                 await bot.send_message(message.channel, "For which city do you want to get the current temperature ?, ex:Norfolk,US")
