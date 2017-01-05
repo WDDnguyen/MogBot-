@@ -29,15 +29,15 @@ class OpenWeatherController():
         fahrenheit = (valueOfCelsius - 32) * 5/9
         return fahrenheit
 
-    def currentWeather(self,cityName,areaName,APIKey):
-        weatherRequestJson = self.requestCurrentWeatherURL(cityName, areaName, APIKey)
+    def currentWeather(self,cityName,areaName):
+        weatherRequestJson = self.requestCurrentWeatherURL(cityName, areaName, self.APIKey)
         currentStatistic = CurrentWeatherStatistic(weatherRequestJson, cityName)
-        return
+        return currentStatistic.displayStatisticTabularForm()
 
-    def forecastWeather(self,cityName,areaName,APIKey):
-        forecastRequestJson = self.requestForeCastURL(cityName, areaName, APIKey)
+    def forecastWeather(self,cityName,areaName):
+        forecastRequestJson = self.requestForeCastURL(cityName, areaName, self.APIKey)
         forecastStatistic = ForecastStatistic(forecastRequestJson)
-        return
+        return  forecastStatistic.displayStatisticTabularForm()
 
 
 

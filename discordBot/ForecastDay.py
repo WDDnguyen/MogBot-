@@ -10,35 +10,35 @@ class forecastDay(WeatherInformation):
     def extractInformation(self,item):
         cityForecastInformation = []
 
-        cityTimeOfForecast = item["dt_txt"]
-        cityForecastWindSpeed = [item[self.wind][self.windSpeed],item[self.wind][self.windDegree]]
+        cityTimeOfForecast = item["dt_txt"][11:18]
+        cityForecastWindSpeed = [item[self.wind][self.windSpeed]]
 
         try :
             item[self.rainVolume][self.last3Hours]
         except KeyError :
-            cityForecastRain = []
+            cityForecastRain = ["None"]
         else:
             cityForecastRain = item[self.rainVolume][self.last3Hours]
 
         try :
             item[self.snowVolume][self.last3Hours]
         except KeyError :
-            cityForecastSnow = []
+            cityForecastSnow = ["None"]
         else :
             cityForecastSnow = item[self.snowVolume][self.last3Hours]
 
         cityWeather = item[self.weatherInfo]
-        cityWeatherDescription = "Current weather status : " + cityWeather[0][self.weatherDescription]
+        cityWeatherDescription = cityWeather[0][self.weatherDescription]
 
         cityMain = item[self.mainDescription]
-        cityForecastTemperature = [cityMain[self.temperature], cityMain[self.minimumTemperature],cityMain[self.maximumTemperature]]
+        cityForecastTemperature = [cityMain[self.temperature]]
         cityForecastPressure = cityMain[self.pressure]
         cityForecastHumidity = cityMain[self.humidity]
         cityForecastCloudiness = item[self.clouds]["all"]
 
         cityForecastInformation.append(cityTimeOfForecast)
-        cityForecastInformation.append(cityForecastWindSpeed)
         cityForecastInformation.append(cityWeatherDescription)
+        cityForecastInformation.append(cityForecastWindSpeed)
         cityForecastInformation.append(cityForecastTemperature)
         cityForecastInformation.append(cityForecastPressure)
         cityForecastInformation.append(cityForecastHumidity)
@@ -69,3 +69,13 @@ class forecastDay(WeatherInformation):
         for item in self.timeList:
             extractedInfo = self.extractInformation(item)
             self.displayStatistic(extractedInfo)
+
+    def createForecastTabularForm(self):
+        tabularList = []
+        for item in self.timeList :
+            tabularList.append(self.extractInformation(item))
+
+        return tabularList
+
+
+

@@ -1,12 +1,12 @@
 from ForecastDay import forecastDay
+from prettytable import PrettyTable
+from datetime import datetime
 
 class ForecastStatistic():
     ForecastJson = ""
-    forecastDayList = []
+
     def __init__(self,Json):
-        ForecastJson = Json
-        forecastDay = self.extractForecastInformationJson(ForecastJson)
-        self.displayStatistic(forecastDay)
+        self.ForecastJson = Json
 
     def extractForecastInformationJson(self,forecastRequestJson):
 
@@ -35,3 +35,18 @@ class ForecastStatistic():
         for day in forecastDayList:
             currentDay = forecastDay(day)
             currentDay.displayForecastStatistic()
+
+    def displayStatisticTabularForm(self):
+        forecastDayList = self.extractForecastInformationJson(self.ForecastJson)
+        tableList = []
+        fieldName = [" ", "Weather Description", "Wind (m/s)", "Temperature (C)", "Pressure (hPa)", "Humidy (%)","Cloudiness (%)", "Rain (mm)", "Snow (cm)"]
+
+        for day in forecastDayList:
+            table = PrettyTable(fieldName)
+            currentDay = forecastDay(day)
+            tabulatedDay = currentDay.createForecastTabularForm()
+            for item in tabulatedDay :
+                table.add_row(item)
+
+            tableList.append(table)
+        return tableList

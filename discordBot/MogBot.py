@@ -2,6 +2,7 @@ import discord
 import Token
 from MagicConchShell import MagicConchShell
 from OpenWeatherController import OpenWeatherController
+import datetime
 
 
 token = Token.acquireToken()
@@ -11,7 +12,7 @@ magicConchShellFunction = MagicConchShell()
 openWeatherController = OpenWeatherController()
 
 listOfCommands = {'!magic','!weather'}
-listOfWeatherCommands = {"celsius","fahrenheit","current","forecast"}
+listOfWeatherCommands = {"!celsius","!fahrenheit","!current","!forecast"}
 
 @bot.event
 async def on_ready():
@@ -25,6 +26,8 @@ async def on_message(message):
 
     if message.author == bot.user:
         return
+
+#NO MESSAGE
 
 #HELP COMMAND
 
@@ -90,10 +93,38 @@ async def on_message(message):
                         await bot.send_message(message.channel, "This isn't an numerical value, please try again")
 
             elif ask == '!current' :
-                await bot.send_message(message.channel, "For which city do you want to get the current temperature ?, ex:Norfolk,US")
+                await bot.send_message(message.channel, "For which city do you want to get the current statistic ? ex: Norfolk,US")
 
                 value = await bot.wait_for_message(timeout=15.0, author=message.author)
-                value = str(value.content)
+                if value is None:
+                    await bot.send_message(message.channel, "There was no message")
+                else:
+                    value = str(value.content).lower()
+                    valueList = value.split(',',1 )
+                    cityName = valueList[0]
+                    areaName = valueList[1]
 
+                    response = openWeatherController.currentWeather(cityName,areaName)
+
+                    await bot.send_message(message.channel, response)
+
+            elif ask == '!forecast' :
+                await bot.send_message(message.channel, "For which city do you want the forecast? ex :Norfolk,US")
+
+                value = await bot.wait_for_message(timeout=15.0, author=message.author)
+                if value is None:
+                    await bot.send_message(message.channel, "There was no message")
+                else:
+                    value = str(value.content).lower()
+                    valueList = value.split(',', 1)
+                    cityName = valueList[0]
+                    areaName = valueList[1]
+
+                    response = openWeatherController.forecastWeather(cityName, areaName)
+                    index = 0
+                    for item in response :
+                        await bot.send_message(message.channel,datetime.datetime.now() + datetime.timedelta(days=index))
+                        await bot.send_message(message.channel, item)
+                        index += 1
 bot.run(token)
 
