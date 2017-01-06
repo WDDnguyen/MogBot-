@@ -14,8 +14,12 @@ openWeatherController = OpenWeatherController()
 leagueController = LeagueController.LeagueController()
 
 listOfCommands = {'!magic','!weather', '!league'}
+listOfMagicConchShellCommands = {}
 listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
 listOfLeagueCommands = {'!champion','!summoner'}
+
+def capitalize(line):
+    return ' '.join(s[0].upper() + s[1:] for s in line.split(' '))
 
 @bot.event
 async def on_ready():
@@ -36,6 +40,13 @@ async def on_message(message):
         response = "\n"
         for item in listOfCommands :
             response += item + "\n"
+
+            if item == '!weather':
+                for item in listOfWeatherCommands:
+                    response += "        - " + item + "\n"
+            if item == '!league':
+                for item in listOfLeagueCommands:
+                    response += "        - " + item + "\n"
 
         await bot.send_message(message.channel,"Here's a list of commands I can execute :" + response)
 
@@ -149,6 +160,7 @@ async def on_message(message):
 
                     try :
                         value = str(value.content)
+                        value = capitalize(value)
                         response = "Stats for : " + value + " \n\n" + leagueController.acquireChampionStats(value)
                         await bot.send_message(message.channel, response)
                     except KeyError:
