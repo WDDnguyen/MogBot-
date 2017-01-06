@@ -11,8 +11,9 @@ bot = discord.Client()
 magicConchShellFunction = MagicConchShell()
 openWeatherController = OpenWeatherController()
 
-listOfCommands = {'!magic','!weather'}
-listOfWeatherCommands = {"!celsius","!fahrenheit","!current","!forecast"}
+listOfCommands = {'!magic','!weather', '!league'}
+listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
+listOfLeagueCommands = {}
 
 @bot.event
 async def on_ready():
@@ -26,8 +27,6 @@ async def on_message(message):
 
     if message.author == bot.user:
         return
-
-#NO MESSAGE
 
 #HELP COMMAND
 
@@ -126,5 +125,11 @@ async def on_message(message):
                         await bot.send_message(message.channel,datetime.datetime.now() + datetime.timedelta(days=index))
                         await bot.send_message(message.channel, item)
                         index += 1
+#League Mode
+    elif message.content.startswith('!league'):
+        await bot.send_message(message.channel, "Which league command do you want to excite?")
+
+
+
 bot.run(token)
 
