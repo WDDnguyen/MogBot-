@@ -21,11 +21,20 @@ class LeagueController():
         requestAllChampionInformationJson = requestAllChampionInformation.json()
         return requestAllChampionInformationJson
 
+    def requestAllChampionLores(self):
+        URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=lore&api_key='+ self.APIKey
+        loreRequest = requests.get(URL)
+        loreRequestJson = loreRequest.json()
+        return loreRequestJson
+
     def acquireChampionStats(self,championName):
         allChampionStats = self.requestAllChampionStats()
         extractedChampionInformation = allChampionStats['data'][championName]
         championInformation = ChampionInformation.ChampionInformation(extractedChampionInformation)
         return championInformation.displayChampionStats()
+
+
+
 
 #Unit Testing
 def main():
