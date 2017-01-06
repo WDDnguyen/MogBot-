@@ -1,8 +1,9 @@
 import requests
-import APIKey
 
-from ForecastStatistic import ForecastStatistic
-from CurrentWeatherStatistic import CurrentWeatherStatistic
+from openWeather import APIKey
+from openWeather.ForecastStatistic import ForecastStatistic
+from openWeather.CurrentWeatherStatistic import CurrentWeatherStatistic
+
 
 class OpenWeatherController():
 

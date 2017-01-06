@@ -1,4 +1,4 @@
-from ForecastDay import forecastDay
+from openWeather.ForecastDay import forecastDay
 from prettytable import PrettyTable
 from datetime import datetime
 

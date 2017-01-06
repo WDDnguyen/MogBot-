@@ -1,4 +1,4 @@
-from WeatherInformation import WeatherInformation
+from openWeather.WeatherInformation import WeatherInformation
 
 class forecastDay(WeatherInformation):
     timeList = []

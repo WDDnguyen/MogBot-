@@ -1,7 +1,7 @@
 import discord
 import Token
 from MagicConchShell import MagicConchShell
-from OpenWeatherController import OpenWeatherController
+from openWeather.OpenWeatherController import OpenWeatherController
 from discordBot.LoL import LeagueController
 import datetime
 
