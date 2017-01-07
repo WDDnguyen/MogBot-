@@ -39,7 +39,8 @@ class ChampionInformation():
     def acquireChampionSkinNumber(self,skinName):
         skinInformation = self.acquireChampionSkinsInformation()
         skinNumber = ""
-        skinName = skinName.title()
+        if skinName != 'default':
+            skinName = skinName.title()
         for index in range(0, len(skinInformation)):
             if skinName == skinInformation[index]['name'] :
                 skinNumber = skinInformation[index]['num']

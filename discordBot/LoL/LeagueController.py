@@ -47,7 +47,7 @@ def main():
     print ("-------------------------------------------------------")
 
     championName = 'Bard'
-    championSkinName = 'elderwood bard'
+    championSkinName = 'default'
     controller.requestChampionData(championName)
     print(controller.acquireChampionData())
     print(controller.championInformation.displayChampionID())
