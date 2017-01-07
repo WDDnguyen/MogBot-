@@ -23,6 +23,8 @@ class LeagueController():
         championInformation = ChampionInformation.ChampionInformation(championDataJson,championName)
         self.championInformation = championInformation
 
+    def acquireChampionLore(self):
+        return self.championInformation.displayChampionLore()
     def acquireChampionStats(self):
         return self.championInformation.displayChampionStats()
 
@@ -50,7 +52,7 @@ def main():
     championSkinName = 'default'
     controller.requestChampionData(championName)
     print(controller.acquireChampionData())
-    print(controller.championInformation.displayChampionID())
+    print(controller.championInformation.displayChampionName())
     print(controller.championInformation.displayChampionLore())
     print(controller.acquireChampionStats())
     print(controller.acquireChampionSkinName())

@@ -15,8 +15,8 @@ class ChampionInformation():
         response = self.championName
         return response
 
-    def displayChampionID(self):
-        response = self.championInfo['data'][self.championName]['key']
+    def displayChampionName(self):
+        response = self.championInfo['data'][self.championName]['id']
         return response
 
     def displayChampionLore(self):
@@ -39,6 +39,7 @@ class ChampionInformation():
     def acquireChampionSkinNumber(self,skinName):
         skinInformation = self.acquireChampionSkinsInformation()
         skinNumber = ""
+        skinName = skinName.lower()
         if skinName != 'default':
             skinName = skinName.title()
         for index in range(0, len(skinInformation)):
@@ -51,3 +52,5 @@ class ChampionInformation():
             print(item + " : " + str(self.championInfo['data'][self.championName][item]) + "\n")
         print("---------------------------------")
 
+    def Exist(self):
+        print (True)

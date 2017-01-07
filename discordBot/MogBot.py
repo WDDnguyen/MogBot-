@@ -17,9 +17,13 @@ listOfCommands = {'!magic','!weather', '!league'}
 listOfMagicConchShellCommands = {}
 listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
 listOfLeagueCommands = {'!champion','!summoner'}
+listOfChampionCommands = {'!skin','!stats','!lore',}
 
 def capitalize(line):
     return ' '.join(s[0].upper() + s[1:] for s in line.split(' '))
+
+def formatAnswer(answer):
+    return str(answer.content).lower()
 
 @bot.event
 async def on_ready():
@@ -47,6 +51,9 @@ async def on_message(message):
             if item == '!league':
                 for item in listOfLeagueCommands:
                     response += "        - " + item + "\n"
+                    if item == '!champion':
+                        for item in listOfChampionCommands:
+                            response += "                - " + item + "\n"
 
         await bot.send_message(message.channel,"Here's a list of commands I can execute :" + response)
 
@@ -149,22 +156,66 @@ async def on_message(message):
             await bot.send_message(message.channel, "There was no command for weather")
 
         else:
+            #Champion Mode
             if ask == "!champion" :
                 await bot.send_message(message.channel, "Which champion do you want to get information on?")
 
-                value = await bot.wait_for_message(timeout=15.0, author=message.author)
+                championName = await bot.wait_for_message(timeout=15.0, author=message.author)
 
-                if value is None:
+                if championName is None:
                     await bot.send_message(message.channel, "There was no message")
-                else:
 
+                else:
                     try :
-                        value = str(value.content)
-                        value = capitalize(value)
-                        response = "Stats for : " + value + " \n\n" + leagueController.acquireChampionStats(value)
-                        await bot.send_message(message.channel, response)
+                        championName = formatAnswer(championName)
+                        championName = capitalize(championName)
+                        leagueController.requestChampionData(championName)
+
+                        await bot.send_message(message.channel, "Which commands for the champion do you want to execute?")
+
+                        command = await bot.wait_for_message(timeout=15.0, author=message.author)
+
+                        if command is None:
+                            await bot.send_message(message.channel, "There was no message")
+                        else:
+                            command = str(command.content).lower()
+                            if command == '!stats':
+                                response = "Stats for : " + leagueController.championInformation.displayChampionName() + " \n\n" + leagueController.acquireChampionStats()
+                                await bot.send_message(message.channel, response)
+
+                            elif command == '!lore':
+                                response = leagueController.acquireChampionLore()
+                                await bot.send_message(message.channel, response)
+
+                            elif command == '!skin':
+                                response = "List of skin for this champion : "
+                                skinList = leagueController.acquireChampionSkinName()
+                                for item in skinList :
+                                    response += item + ", "
+                                await bot.send_message(message.channel,  response)
+                                await bot.send_message(message.channel, "Do you want the image of this skin? yes/no")
+
+                                answer = await bot.wait_for_message(timeout=15.0, author=message.author)
+                                answer = formatAnswer(answer)
+
+                                if answer == 'yes':
+                                    await bot.send_message(message.channel, "which one?")
+                                    skinName = await bot.wait_for_message(timeout=15.0, author= message.author)
+                                    skinName = formatAnswer(skinName)
+
+                                    URL = leagueController.acquireChampionSkinImage(championName,skinName)
+                                    response = URL
+                                    await bot.send_message(message.channel, response)
+
+                                else :
+                                    pass
                     except KeyError:
                         await bot.send_message(message.channel, "There is no champion with that name")
+                        pass
+
+
+
+
 
 bot.run(token)
 
