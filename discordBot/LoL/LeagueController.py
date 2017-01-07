@@ -5,6 +5,7 @@ from discordBot.LoL import ChampionInformation
 
 class LeagueController():
     APIKey = LoLAPIKey.acquireAPIKey()
+    championInformation = []
 
     def __init__(self):
         return
@@ -15,26 +16,26 @@ class LeagueController():
         summonerRequestJson = summonerRequest.json()
         return summonerRequestJson
 
-    def requestAllChampionStats(self):
-        URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=stats&api_key='+self.APIKey
-        requestAllChampionInformation = requests.get(URL)
-        requestAllChampionInformationJson = requestAllChampionInformation.json()
-        return requestAllChampionInformationJson
+    def requestChampionData(self,championName):
+        URL = 'http://ddragon.leagueoflegends.com/cdn/5.14.1/data/en_US/champion/'+championName+'.json'
+        championData = requests.get(URL)
+        championDataJson = championData.json()
+        championInformation = ChampionInformation.ChampionInformation(championDataJson,championName)
+        self.championInformation = championInformation
 
-    def requestAllChampionLores(self):
-        URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=lore&api_key='+ self.APIKey
-        loreRequest = requests.get(URL)
-        loreRequestJson = loreRequest.json()
-        return loreRequestJson
+    def acquireChampionStats(self):
+        return self.championInformation.displayChampionStats()
 
-    def acquireChampionStats(self,championName):
-        allChampionStats = self.requestAllChampionStats()
-        extractedChampionInformation = allChampionStats['data'][championName]
-        championInformation = ChampionInformation.ChampionInformation(extractedChampionInformation)
-        return championInformation.displayChampionStats()
+    def acquireChampionData(self):
+        return self.championInformation.displayAllChampionData()
 
+    def acquireChampionSkinName(self):
+        return self.championInformation.acquireChampionSkinNames()
 
-
+    def acquireChampionSkinImage(self,championName,skinName):
+        championSkinNumber = self.championInformation.acquireChampionSkinNumber(skinName)
+        URL = 'http://ddragon.leagueoflegends.com/cdn/img/champion/splash/'+championName+'_'+str(championSkinNumber)+'.jpg'
+        return URL
 
 #Unit Testing
 def main():
@@ -43,9 +44,17 @@ def main():
     controller = LeagueController()
     summonerJson = controller.requestSummonerDataURL(region,summonerName)
     print (summonerJson)
+    print ("-------------------------------------------------------")
 
-    championName = "Jhin"
-    print(controller.acquireChampionStats(championName))
+    championName = 'Bard'
+    championSkinName = 'elderwood bard'
+    controller.requestChampionData(championName)
+    print(controller.acquireChampionData())
+    print(controller.championInformation.displayChampionID())
+    print(controller.championInformation.displayChampionLore())
+    print(controller.acquireChampionStats())
+    print(controller.acquireChampionSkinName())
+    print(controller.acquireChampionSkinImage(championName,championSkinName))
 
 if __name__ == "__main__":
     main()
