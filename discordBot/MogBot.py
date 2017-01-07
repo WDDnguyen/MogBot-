@@ -4,7 +4,7 @@ from MagicConchShell import MagicConchShell
 from openWeather.OpenWeatherController import OpenWeatherController
 from discordBot.LoL import LeagueController
 import datetime
-
+import json
 
 token = Token.acquireToken()
 bot = discord.Client()
@@ -75,7 +75,7 @@ async def on_message(message):
         await bot.send_message(message.channel, "Which weather command do you want me to execute?")
 
         ask = await bot.wait_for_message(timeout = 15.0, author = message.author)
-        ask = str(ask.content).lower()
+        ask = formatAnswer(ask)
 
         if ask is None :
             await bot.send_message(message.channel,"There was no command for weather")
@@ -118,7 +118,7 @@ async def on_message(message):
                 if value is None:
                     await bot.send_message(message.channel, "There was no message")
                 else:
-                    value = str(value.content).lower()
+                    value = formatAnswer(value)
                     valueList = value.split(',',1 )
                     cityName = valueList[0]
                     areaName = valueList[1]
@@ -134,7 +134,7 @@ async def on_message(message):
                 if value is None:
                     await bot.send_message(message.channel, "There was no message")
                 else:
-                    value = str(value.content).lower()
+                    value = formatAnswer(value)
                     valueList = value.split(',', 1)
                     cityName = valueList[0]
                     areaName = valueList[1]
@@ -150,7 +150,7 @@ async def on_message(message):
         await bot.send_message(message.channel, "Which league command do you want to execute?")
 
         ask = await bot.wait_for_message(timeout=15.0, author=message.author)
-        ask = str(ask.content).lower()
+        ask = formatAnswer(ask)
 
         if ask is None:
             await bot.send_message(message.channel, "There was no command for weather")
@@ -178,7 +178,7 @@ async def on_message(message):
                         if command is None:
                             await bot.send_message(message.channel, "There was no message")
                         else:
-                            command = str(command.content).lower()
+                            command = formatAnswer(command)
                             if command == '!stats':
                                 response = "Stats for : " + leagueController.championInformation.displayChampionName() + " \n\n" + leagueController.acquireChampionStats()
                                 await bot.send_message(message.channel, response)
@@ -209,13 +209,9 @@ async def on_message(message):
 
                                 else :
                                     pass
-                    except KeyError:
+                    except json.decoder.JSONDecodeError:
                         await bot.send_message(message.channel, "There is no champion with that name")
                         pass
-
-
-
-
 
 bot.run(token)
 
