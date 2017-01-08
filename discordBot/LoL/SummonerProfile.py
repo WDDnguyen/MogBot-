@@ -9,8 +9,8 @@ class SummonerProfile():
     def displayAllRankedStatistic(self):
         return self.summonerRankedStatisticOfAllSeasons
 
-    def displayMostPlayedRankedChampionOfCurrentSeason(self):
-        MostPlayedRankedChampionsList = []
+    def acquireMostPlayedRankedChampionsOfCurrentSeason(self):
+        mostPlayedRankedChampionsList = []
         mostPlayedCurrentRankedChampion = None
         secondMostPlayedCurrentRankedChampion = None
         thirdMostPlayedCurrentRankedChampion = None
@@ -41,10 +41,18 @@ class SummonerProfile():
                 if champion['id'] !=0:
                     thirdMostPlayedCurrentRankedChampion = champion
 
-        MostPlayedRankedChampionsList.append(mostPlayedCurrentRankedChampion['id'])
-        MostPlayedRankedChampionsList.append(secondMostPlayedCurrentRankedChampion['id'])
-        MostPlayedRankedChampionsList.append(thirdMostPlayedCurrentRankedChampion['id'])
-        return MostPlayedRankedChampionsList
+        mostPlayedRankedChampionsList.append(mostPlayedCurrentRankedChampion['id'])
+        mostPlayedRankedChampionsList.append(secondMostPlayedCurrentRankedChampion['id'])
+        mostPlayedRankedChampionsList.append(thirdMostPlayedCurrentRankedChampion['id'])
+        return mostPlayedRankedChampionsList
+
+
+
+
+
+
+
+
 
 
 

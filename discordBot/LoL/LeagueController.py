@@ -40,6 +40,23 @@ class LeagueController():
         summonerProfile = SummonerProfile.SummonerProfile(summonerInformation,summonerRankedStatistic)
         self.summonerProfile = summonerProfile
 
+    def acquireCurrentMostPlayedChampionNames(self):
+        currentMostPlayedChampionNames = []
+        MostPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
+
+        for item in MostPlayedChampionList:
+            championName = self.requestChampionName(str(item))
+            currentMostPlayedChampionNames.append((championName))
+
+        return currentMostPlayedChampionNames
+
+    def requestChampionName(self,ID):
+        URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/'+ID+'?api_key='+self.APIKey
+        championNameRequest = requests.get(URL)
+        championNameRequestJson = championNameRequest.json()
+        championName = championNameRequestJson['name']
+        return championName
+
     def requestChampionData(self,championName):
         URL = 'http://ddragon.leagueoflegends.com/cdn/5.14.1/data/en_US/champion/'+championName+'.json'
         championData = requests.get(URL)
@@ -75,7 +92,8 @@ def main():
     print ("-------------------------------------------------------")
     controller.createSummonerInformation(region,summonerName)
     #print(controller.summonerProfile.displayAllRankedStatistic())
-    print(controller.summonerProfile.displayMostPlayedRankedChampionOfCurrentSeason())
+    #print(controller.summonerProfile.displayMostPlayedRankedChampionOfCurrentSeason())
+    print(controller.acquireCurrentMostPlayedChampionNames())
     """championName = 'Bard'
     championSkinName = 'default'
     controller.requestChampionData(championName)

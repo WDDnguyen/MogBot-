@@ -18,6 +18,7 @@ listOfMagicConchShellCommands = {}
 listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
 listOfLeagueCommands = {'!champion','!summoner'}
 listOfChampionCommands = {'!skin','!stats','!lore',}
+listOfSummonerCommands = {'!rank'}
 
 def capitalize(line):
     return ' '.join(s[0].upper() + s[1:] for s in line.split(' '))
@@ -53,6 +54,9 @@ async def on_message(message):
                     response += "        - " + item + "\n"
                     if item == '!champion':
                         for item in listOfChampionCommands:
+                            response += "                - " + item + "\n"
+                    if item == '!summoner':
+                        for item in listOfSummonerCommands:
                             response += "                - " + item + "\n"
 
         await bot.send_message(message.channel,"Here's a list of commands I can execute :" + response)
@@ -213,5 +217,39 @@ async def on_message(message):
                         await bot.send_message(message.channel, "There is no champion with that name")
                         pass
 
+            elif ask == '!summoner':
+                await bot.send_message(message.channel, "Which player do you want to get information on? summoner name,region")
+
+                summonerInfo = await bot.wait_for_message(timeout=15.0,author=message.author)
+
+                if summonerInfo is None:
+                    await bot.send_message(message.channel, "There was no message")
+                else :
+                    try:
+                        summonerInfo = formatAnswer(summonerInfo)
+                        valueList = summonerInfo.split(',', 1)
+                        summonerName = valueList[0]
+                        summonerRegion = valueList[1]
+                        leagueController.createSummonerInformation(summonerRegion,summonerName)
+
+                    except:
+                        pass
+
+                    await bot.send_message(message.channel, "Which commands for the player do you want to execute?")
+
+                    summonerCommand = await bot.wait_for_message(timeout=15.0, author=message.author)
+
+                    if summonerCommand is None:
+                        await bot.send_message(message.channel, "There was no message")
+
+                    else :
+                        summonerCommand = formatAnswer(summonerCommand)
+                        if summonerCommand == '!rank':
+                            response = "This is " + summonerName + " best champions for this season : \n"
+                            championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
+                            for champion in championNameList:
+                                response += champion + " "
+
+                            await bot.send_message(message.channel, response)
 bot.run(token)
 
