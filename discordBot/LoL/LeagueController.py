@@ -67,8 +67,8 @@ class LeagueController():
 #Unit Testing
 def main():
     region = "na"
-    summonerName = "Kawakaze K2"
-    summonerID = "32399524"
+    summonerName = "akiducky"
+    summonerID = "24537840"
     controller = LeagueController()
     summonerJson = controller.requestSummonerData(region,summonerName)
     print (summonerJson)

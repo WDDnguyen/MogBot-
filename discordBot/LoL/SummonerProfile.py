@@ -17,23 +17,29 @@ class SummonerProfile():
 
         currentSeasonRankedStatistic = self.summonerRankedStatisticOfAllSeasons[-1]
 
-        print ( "Number of ID: " + str(len(currentSeasonRankedStatistic['champions'])))
-        for championID in currentSeasonRankedStatistic['champions']:
-            print(championID['id'])
-
         for champion in currentSeasonRankedStatistic['champions']:
-            if mostPlayedCurrentRankedChampion == None:
+            if mostPlayedCurrentRankedChampion is None:
                 mostPlayedCurrentRankedChampion = champion
-            if secondMostPlayedCurrentRankedChampion == None:
-                mostPlayedCurrentRankedChampion = champion
-            if thirdMostPlayedCurrentRankedChampion == None:
-                thirdMostPlayedCurrentRankedChampion = champion
 
             elif mostPlayedCurrentRankedChampion['stats']['totalSessionsPlayed'] <= champion['stats']['totalSessionsPlayed']:
                 if champion['id'] != 0:
                     thirdMostPlayedCurrentRankedChampion = secondMostPlayedCurrentRankedChampion
                     secondMostPlayedCurrentRankedChampion = mostPlayedCurrentRankedChampion
                     mostPlayedCurrentRankedChampion = champion
+            elif secondMostPlayedCurrentRankedChampion is None:
+                secondMostPlayedCurrentRankedChampion = champion
+
+            elif secondMostPlayedCurrentRankedChampion['stats']['totalSessionsPlayed'] <= champion['stats']['totalSessionsPlayed']:
+                if champion['id'] != 0:
+                    thirdMostPlayedCurrentRankedChampion = secondMostPlayedCurrentRankedChampion
+                    secondMostPlayedCurrentRankedChampion = champion
+
+            elif thirdMostPlayedCurrentRankedChampion is None:
+                thirdMostPlayedCurrentRankedChampion = champion
+
+            elif thirdMostPlayedCurrentRankedChampion['stats']['totalSessionsPlayed'] <= champion['stats']['totalSessionsPlayed']:
+                if champion['id'] !=0:
+                    thirdMostPlayedCurrentRankedChampion = champion
 
         MostPlayedRankedChampionsList.append(mostPlayedCurrentRankedChampion['id'])
         MostPlayedRankedChampionsList.append(secondMostPlayedCurrentRankedChampion['id'])
