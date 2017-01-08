@@ -74,8 +74,8 @@ def main():
     print (summonerJson)
     print ("-------------------------------------------------------")
     controller.createSummonerInformation(region,summonerName)
-    print(controller.summonerProfile.displayAllRankedStatistic())
-
+    #print(controller.summonerProfile.displayAllRankedStatistic())
+    print(controller.summonerProfile.displayMostPlayedRankedChampionOfCurrentSeason())
     """championName = 'Bard'
     championSkinName = 'default'
     controller.requestChampionData(championName)
