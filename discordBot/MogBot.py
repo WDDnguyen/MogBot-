@@ -6,7 +6,7 @@ from discordBot.LoL import LeagueController
 import datetime
 import json
 
-token = Token.acquireToken()
+token = Token.acquirechocoBotToken()
 bot = discord.Client()
 
 magicConchShellFunction = MagicConchShell()
