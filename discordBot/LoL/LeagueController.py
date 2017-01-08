@@ -42,13 +42,34 @@ class LeagueController():
 
     def acquireCurrentMostPlayedChampionNames(self):
         currentMostPlayedChampionNames = []
-        MostPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
+        mostPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
 
-        for item in MostPlayedChampionList:
-            championName = self.requestChampionName(str(item))
-            currentMostPlayedChampionNames.append((championName))
+        for item in mostPlayedChampionList:
+            championName = self.requestChampionName(str(item['id']))
+            currentMostPlayedChampionNames.append(championName)
 
         return currentMostPlayedChampionNames
+
+    def acquireCurrentBestPlayedChampionNames(self):
+        currentBestPlayedChampinNames =[]
+        bestPlayedChampionList = self.summonerProfile.acquireBestCurrentChampionsOfSeason()
+
+        for champion in bestPlayedChampionList:
+            championName = self.requestChampionName(str(champion['id']))
+            currentBestPlayedChampinNames.append(championName)
+
+        return currentBestPlayedChampinNames
+
+
+    def acquireCurrentPlayedChampionStats(self):
+        currentMostPlayedChampionStats = []
+        currentPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
+
+        for item in currentPlayedChampionList:
+            championStats = item['stats']
+            currentMostPlayedChampionStats.append(championStats)
+
+        return currentMostPlayedChampionStats
 
     def requestChampionName(self,ID):
         URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/'+ID+'?api_key='+self.APIKey
@@ -94,6 +115,10 @@ def main():
     #print(controller.summonerProfile.displayAllRankedStatistic())
     #print(controller.summonerProfile.displayMostPlayedRankedChampionOfCurrentSeason())
     print(controller.acquireCurrentMostPlayedChampionNames())
+    print(controller.acquireCurrentPlayedChampionStats())
+    print(controller.acquireCurrentBestPlayedChampionNames())
+    print("-------------------------------------------------------")
+   # print(controller.summonerProfile.acquireBestCurrentChampionsOfSeason())
     """championName = 'Bard'
     championSkinName = 'default'
     controller.requestChampionData(championName)

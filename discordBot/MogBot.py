@@ -247,9 +247,12 @@ async def on_message(message):
                         if summonerCommand == '!rank':
                             response = "This is " + summonerName + " best champions for this season : \n"
                             championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
+
                             for champion in championNameList:
-                                response += champion + " "
+                                response += champion + ", "
 
                             await bot.send_message(message.channel, response)
+
+
 bot.run(token)
 
