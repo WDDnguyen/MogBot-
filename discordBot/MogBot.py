@@ -117,6 +117,7 @@ async def on_message(message):
                     areaName = valueList[1]
 
                     response = openWeatherController.currentWeather(cityName,areaName)
+                    print(response)
 
                     await bot.send_message(message.channel, response)
 
