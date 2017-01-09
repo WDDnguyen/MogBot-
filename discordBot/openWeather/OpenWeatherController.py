@@ -4,7 +4,6 @@ from openWeather import APIKey
 from openWeather.ForecastStatistic import ForecastStatistic
 from openWeather.CurrentWeatherStatistic import CurrentWeatherStatistic
 
-
 class OpenWeatherController():
 
     APIKey = APIKey.acquireKey()
@@ -23,7 +22,7 @@ class OpenWeatherController():
         return forecastRequestJson
 
     def fahrenheitToCelsius(self,valueOfFahrenheit):
-        celsius = (valueOfFahrenheit * 9/5) +32
+        celsius = (valueOfFahrenheit * 9/5) + 32
         return celsius
 
     def celsiusToFahrenheit(self,valueOfCelsius):
