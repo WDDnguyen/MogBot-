@@ -9,6 +9,14 @@ class SummonerProfile():
     def displayAllRankedStatistic(self):
         return self.summonerRankedStatisticOfAllSeasons
 
+    def acquireAllPlayedRankedChampionsOfCurrentSeason(self):
+        allPlayedRankedChampionsList = []
+        currentSeasonRankedStatistic = self.summonerRankedStatisticOfAllSeasons[-1]
+        for champion in currentSeasonRankedStatistic['champions']:
+            allPlayedRankedChampionsList.append(champion)
+
+        return allPlayedRankedChampionsList
+
     def acquireMostPlayedRankedChampionsOfCurrentSeason(self):
         mostPlayedRankedChampionsList = []
         mostPlayedCurrentRankedChampion = None
@@ -57,7 +65,6 @@ class SummonerProfile():
         for champion in currentSeasonRankedStatistic['champions']:
             championKDA = self.averageKDAOfChampion(champion['stats'])
             championScore = self.calculateScoreOfChampionByKDA(championKDA)
-           # print("champion" + str(champion['id']) + " KDA : " + str(championKDA) + " SCORE : " + str(championScore) )
 
             if bestPlayedCurrentRankedChampion is None:
                 bestPlayedCurrentRankedChampion = champion

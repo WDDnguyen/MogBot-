@@ -18,7 +18,7 @@ listOfMagicConchShellCommands = {}
 listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
 listOfLeagueCommands = {'!champion','!summoner'}
 listOfChampionCommands = {'!skin','!stats','!lore',}
-listOfSummonerCommands = {'!rank'}
+listOfSummonerCommands = {'!most','!best'}
 
 def capitalize(line):
     return ' '.join(s[0].upper() + s[1:] for s in line.split(' '))
@@ -244,8 +244,8 @@ async def on_message(message):
 
                     else :
                         summonerCommand = formatAnswer(summonerCommand)
-                        if summonerCommand == '!rank':
-                            response = "This is " + summonerName + " best champions for this season : \n"
+                        if summonerCommand == '!most':
+                            response = "This is " + summonerName + " most played champions for this season : \n"
                             championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
 
                             for champion in championNameList:
@@ -253,6 +253,50 @@ async def on_message(message):
 
                             await bot.send_message(message.channel, response)
 
+                            await bot.send_message(message.channel,"\n do you want to get more information on these champions? yes/no")
+
+                            answer = await bot.wait_for_message(timeout=15.0, author=message.author)
+                            answer = formatAnswer(answer)
+
+                            if answer == 'yes':
+                                statResponse = " "
+                                leagueController.acquireCurrentPlayedChampionStats()
+                                championStatList = leagueController.acquireSpecificMostPlayedChampionStats()
+
+                                for championStat in championStatList:
+                                    statResponse += championStat + "\n"
+
+                                await bot.send_message(message.channel, statResponse)
+
+                            else:
+                                pass
+
+                        elif summonerCommand == '!best':
+                            response = "This is " + summonerName + " best played champions for this season : \n"
+                            championNameList = leagueController.acquireCurrentBestPlayedChampionNames()
+
+                            for champion in championNameList:
+                                response += champion + ","
+
+                            await bot.send_message(message.channel, response)
+
+                            await bot.send_message(message.channel, "\n do you want to get more information on these champions? yes/no")
+
+                            answer = await bot.wait_for_message(timeout=15.0, author=message.author)
+                            answer = formatAnswer(answer)
+
+                            if answer == 'yes':
+                                statResponse = " "
+                                leagueController.acquireCurrentPlayedChampionStats()
+                                championStatList = leagueController.acquireSpecificBestPlayedChampionStats()
+
+                                for championStat in championStatList:
+                                    statResponse += championStat + "\n"
+
+                                await bot.send_message(message.channel, statResponse)
+
+                            else:
+                                pass
 
 bot.run(token)
 

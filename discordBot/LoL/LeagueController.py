@@ -7,11 +7,16 @@ class LeagueController():
     APIKey = LoLAPIKey.acquireAPIKey()
     championInformation = None
     summonerProfile = None
+    currentPlayedChampionStats = None
+    bestPlayedChampionsIDList = []
+    mostPlayedChampionsIDList = []
+
     seasonList = ["SEASON2013","SEASON2014","SEASON2015","SEASON2016","SEASON2017"]
 
     def __init__(self):
         return
 
+#SUMMONER FUNCTIONS
     def requestSummonerData(self,region, summonerName):
         URL = "https://" + region + ".api.pvp.net/api/lol/na/v1.4/summoner/by-name/" + summonerName + "?api_key=" + self.APIKey
         summonerRequest = requests.get(URL)
@@ -45,6 +50,7 @@ class LeagueController():
         mostPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
 
         for item in mostPlayedChampionList:
+            self.mostPlayedChampionsIDList.append(item['id'])
             championName = self.requestChampionName(str(item['id']))
             currentMostPlayedChampionNames.append(championName)
 
@@ -55,28 +61,60 @@ class LeagueController():
         bestPlayedChampionList = self.summonerProfile.acquireBestCurrentChampionsOfSeason()
 
         for champion in bestPlayedChampionList:
+            self.bestPlayedChampionsIDList.append(champion['id'])
             championName = self.requestChampionName(str(champion['id']))
             currentBestPlayedChampinNames.append(championName)
 
         return currentBestPlayedChampinNames
 
-
     def acquireCurrentPlayedChampionStats(self):
-        currentMostPlayedChampionStats = []
-        currentPlayedChampionList = self.summonerProfile.acquireMostPlayedRankedChampionsOfCurrentSeason()
+        currentPlayedChampionList = self.summonerProfile.acquireAllPlayedRankedChampionsOfCurrentSeason()
+        self.currentPlayedChampionStats = currentPlayedChampionList
+        return currentPlayedChampionList
 
-        for item in currentPlayedChampionList:
-            championStats = item['stats']
-            currentMostPlayedChampionStats.append(championStats)
+    def acquireSpecificBestPlayedChampionStats(self):
+        specificPlayedChampionStats = []
+        for champion in self.currentPlayedChampionStats:
+            for ID in self.bestPlayedChampionsIDList:
+                if champion['id'] == int(ID):
+                    specificPlayedChampionStats.append(champion['stats'])
 
-        return currentMostPlayedChampionStats
+        specificPlayedChampionStatsList = self.displayFullStatisticOfSpecifiedChampions(specificPlayedChampionStats)
 
+        return specificPlayedChampionStatsList
+
+    def acquireSpecificMostPlayedChampionStats(self):
+        specificPlayedChampionStats = []
+        for champion in self.currentPlayedChampionStats:
+            for ID in self.mostPlayedChampionsIDList:
+                if champion['id'] == int(ID):
+                    specificPlayedChampionStats.append(champion['stats'])
+
+        specificPlayedChampionStatsList = self.displayFullStatisticOfSpecifiedChampions(specificPlayedChampionStats)
+
+        return specificPlayedChampionStatsList
+
+
+    def displayFullStatisticOfSpecifiedChampions(self,specificPlayedChampionStats):
+        specificPlayedChampionStatsList = []
+        response = ""
+        for championStat in specificPlayedChampionStats:
+          for item in championStat:
+              response += item + " : " + str(championStat[item]) + '\n'
+          specificPlayedChampionStatsList.append(response)
+          response = ""
+
+        return specificPlayedChampionStatsList
+
+
+# CHAMPION FUNCTIONS
     def requestChampionName(self,ID):
         URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/'+ID+'?api_key='+self.APIKey
         championNameRequest = requests.get(URL)
         championNameRequestJson = championNameRequest.json()
         championName = championNameRequestJson['name']
         return championName
+
 
     def requestChampionData(self,championName):
         URL = 'http://ddragon.leagueoflegends.com/cdn/5.14.1/data/en_US/champion/'+championName+'.json'
@@ -107,6 +145,8 @@ def main():
     region = "na"
     summonerName = "akiducky"
     summonerID = "24537840"
+    summonerIDList = ['427','421','103']
+
     controller = LeagueController()
     summonerJson = controller.requestSummonerData(region,summonerName)
     print (summonerJson)
@@ -118,6 +158,12 @@ def main():
     print(controller.acquireCurrentPlayedChampionStats())
     print(controller.acquireCurrentBestPlayedChampionNames())
     print("-------------------------------------------------------")
+    print(controller.bestPlayedChampionsIDList)
+    print(controller.mostPlayedChampionsIDList)
+    statList = controller.acquireSpecificBestPlayedChampionStats()
+    for item in statList:
+        print(item)
+
    # print(controller.summonerProfile.acquireBestCurrentChampionsOfSeason())
     """championName = 'Bard'
     championSkinName = 'default'
