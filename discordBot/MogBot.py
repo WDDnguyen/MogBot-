@@ -56,14 +56,16 @@ async def on_message(message):
             response = magicConchShellFunction.responseToCall()
             await bot.send_message(message.channel, str(response))
 
+#RICK AND MORTY MODE PLACEHOLDER
+    elif message.content.startswith('!rnm'):
+        await bot.send_message(message.channel, "There is no Season 3")
+
 #WEATHER MODE
     elif message.content.startswith('!weather'):
-        print(message.content)
         messageComponentList = formatMessage(message).split(' ', 2)
         weatherCommand = messageComponentList[0]
         weatherSubCommand = messageComponentList[1]
         weatherValue = messageComponentList[2]
-        print(messageComponentList)
 
         if weatherSubCommand == '-c':
             try:
@@ -107,151 +109,126 @@ async def on_message(message):
                 index += 1
 #League Mode
     elif message.content.startswith('!league'):
-        await bot.send_message(message.channel, "Which league command do you want to execute?")
-        ask = await bot.wait_for_message(timeout=15.0, author=message.author)
-        ask = formatMessage(ask)
 
-        if ask is None:
-            await bot.send_message(message.channel, "There was no command for weather")
+        messageComponentList = formatMessage(message).split(' ', 2)
+        leagueCommand = messageComponentList[0]
+        leagueSubCommand = messageComponentList[1]
+        leagueValue = messageComponentList[2]
 
-        else:
-            #Champion Mode
-            if ask == "!champion" :
-                await bot.send_message(message.channel, "Which champion do you want to get information on?")
+        if leagueSubCommand[0:2] == '-c':
+            try:
+                championName = capitalize(leagueValue)
+                leagueController.requestChampionData(championName)
 
-                championName = await bot.wait_for_message(timeout=15.0, author=message.author)
+                if leagueSubCommand[2:] == 'stats':
+                    championStatResponse = "Stats for : " + leagueController.championInformation.displayChampionName() + " \n\n" + leagueController.acquireChampionStats()
+                    await bot.send_message(message.channel, championStatResponse)
 
-                if championName is None:
-                    await bot.send_message(message.channel, "There was no message")
+                elif leagueSubCommand[2:] == 'lore':
+                    championLoreResponse = leagueController.acquireChampionLore()
+                    await bot.send_message(message.channel, championLoreResponse)
+
+                elif leagueSubCommand[2:] == 'skin':
+                    skinResponse = "List of skin for this champion : "
+                    skinList = leagueController.acquireChampionSkinName()
+                    for item in skinList:
+                        skinResponse += item + ", "
+                    await bot.send_message(message.channel, skinResponse)
+                    await bot.send_message(message.channel, "To get the skin image type the skin name in the next 30 seconds")
+
+                    skinName = await bot.wait_for_message(timeout=30.0, author=message.author)
+                    skinName = formatMessage(skinName)
+
+                    URL = leagueController.acquireChampionSkinImage(championName, skinName)
+                    response = URL
+                    await bot.send_message(message.channel, response)
 
                 else:
-                    try :
-                        championName = formatMessage(championName)
-                        championName = capitalize(championName)
-                        leagueController.requestChampionData(championName)
+                    await bot.send_message(message.channel, "This is not a correct league champion command")
 
-                        await bot.send_message(message.channel, "Which commands for the champion do you want to execute?")
+            except json.decoder.JSONDecodeError:
+                await bot.send_message(message.channel, "There is no champion with that name")
 
-                        command = await bot.wait_for_message(timeout=15.0, author=message.author)
+        elif leagueSubCommand[0:2] == '-s':
 
-                        if command is None:
-                            await bot.send_message(message.channel, "There was no message")
-                        else:
-                            command = formatMessage(command)
-                            if command == '!stats':
-                                response = "Stats for : " + leagueController.championInformation.displayChampionName() + " \n\n" + leagueController.acquireChampionStats()
-                                await bot.send_message(message.channel, response)
+            await bot.send_message(message.channel, "Which player do you want to get information on? summoner name,region")
 
-                            elif command == '!lore':
-                                response = leagueController.acquireChampionLore()
-                                await bot.send_message(message.channel, response)
+            summonerInfo = await bot.wait_for_message(timeout=15.0,author=message.author)
 
-                            elif command == '!skin':
-                                response = "List of skin for this champion : "
-                                skinList = leagueController.acquireChampionSkinName()
-                                for item in skinList :
-                                    response += item + ", "
-                                await bot.send_message(message.channel,  response)
-                                await bot.send_message(message.channel, "Do you want the image of this skin? yes/no")
+            if summonerInfo is None:
+                await bot.send_message(message.channel, "There was no message")
+            else :
+                try:
+                    summonerInfo = formatMessage(summonerInfo)
+                    valueList = summonerInfo.split(',', 1)
+                    summonerName = valueList[0]
+                    summonerRegion = valueList[1]
+                    leagueController.createSummonerInformation(summonerRegion,summonerName)
 
-                                answer = await bot.wait_for_message(timeout=15.0, author=message.author)
-                                answer = formatMessage(answer)
+                except:
+                    pass
 
-                                if answer == 'yes':
-                                    await bot.send_message(message.channel, "which one?")
-                                    skinName = await bot.wait_for_message(timeout=15.0, author= message.author)
-                                    skinName = formatMessage(skinName)
+                await bot.send_message(message.channel, "Which commands for the player do you want to execute?")
 
-                                    URL = leagueController.acquireChampionSkinImage(championName,skinName)
-                                    response = URL
-                                    await bot.send_message(message.channel, response)
+                summonerCommand = await bot.wait_for_message(timeout=15.0, author=message.author)
 
-                                else :
-                                    pass
-                    except json.decoder.JSONDecodeError:
-                        await bot.send_message(message.channel, "There is no champion with that name")
-                        pass
-
-            elif ask == '!summoner':
-                await bot.send_message(message.channel, "Which player do you want to get information on? summoner name,region")
-
-                summonerInfo = await bot.wait_for_message(timeout=15.0,author=message.author)
-
-                if summonerInfo is None:
+                if summonerCommand is None:
                     await bot.send_message(message.channel, "There was no message")
+
                 else :
-                    try:
-                        summonerInfo = formatMessage(summonerInfo)
-                        valueList = summonerInfo.split(',', 1)
-                        summonerName = valueList[0]
-                        summonerRegion = valueList[1]
-                        leagueController.createSummonerInformation(summonerRegion,summonerName)
+                    summonerCommand = formatMessage(summonerCommand)
+                    if summonerCommand == '!most':
+                        response = "This is " + summonerName + " most played champions for this season : \n"
+                        championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
 
-                    except:
-                        pass
+                        for champion in championNameList:
+                            response += champion + ", "
 
-                    await bot.send_message(message.channel, "Which commands for the player do you want to execute?")
+                        await bot.send_message(message.channel, response)
 
-                    summonerCommand = await bot.wait_for_message(timeout=15.0, author=message.author)
+                        await bot.send_message(message.channel,"\n do you want to get more information on these champions? yes/no")
 
-                    if summonerCommand is None:
-                        await bot.send_message(message.channel, "There was no message")
+                        answer = await bot.wait_for_message(timeout=15.0, author=message.author)
+                        answer = formatAnswer(answer)
 
-                    else :
-                        summonerCommand = formatMessage(summonerCommand)
-                        if summonerCommand == '!most':
-                            response = "This is " + summonerName + " most played champions for this season : \n"
-                            championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
+                        if answer == 'yes':
+                            statResponse = " "
+                            leagueController.acquireCurrentPlayedChampionStats()
+                            championStatList = leagueController.acquireSpecificMostPlayedChampionStats()
 
-                            for champion in championNameList:
-                                response += champion + ", "
+                            for championStat in championStatList:
+                                statResponse += championStat + "\n"
 
-                            await bot.send_message(message.channel, response)
+                            await bot.send_message(message.channel, statResponse)
 
-                            await bot.send_message(message.channel,"\n do you want to get more information on these champions? yes/no")
+                        else:
+                            pass
 
-                            answer = await bot.wait_for_message(timeout=15.0, author=message.author)
-                            answer = formatAnswer(answer)
+                    elif summonerCommand == '!best':
+                        response = "This is " + summonerName + " best played champions for this season : \n"
+                        championNameList = leagueController.acquireCurrentBestPlayedChampionNames()
 
-                            if answer == 'yes':
-                                statResponse = " "
-                                leagueController.acquireCurrentPlayedChampionStats()
-                                championStatList = leagueController.acquireSpecificMostPlayedChampionStats()
+                        for champion in championNameList:
+                            response += champion + ","
 
-                                for championStat in championStatList:
-                                    statResponse += championStat + "\n"
+                        await bot.send_message(message.channel, response)
 
-                                await bot.send_message(message.channel, statResponse)
+                        await bot.send_message(message.channel, "\n do you want to get more information on these champions? yes/no")
 
-                            else:
-                                pass
+                        answer = await bot.wait_for_message(timeout=15.0, author=message.author)
+                        answer = formatMessage(answer)
 
-                        elif summonerCommand == '!best':
-                            response = "This is " + summonerName + " best played champions for this season : \n"
-                            championNameList = leagueController.acquireCurrentBestPlayedChampionNames()
+                        if answer == 'yes':
+                            statResponse = " "
+                            leagueController.acquireCurrentPlayedChampionStats()
+                            championStatList = leagueController.acquireSpecificBestPlayedChampionStats()
 
-                            for champion in championNameList:
-                                response += champion + ","
+                            for championStat in championStatList:
+                                statResponse += championStat + "\n"
 
-                            await bot.send_message(message.channel, response)
+                            await bot.send_message(message.channel, statResponse)
 
-                            await bot.send_message(message.channel, "\n do you want to get more information on these champions? yes/no")
-
-                            answer = await bot.wait_for_message(timeout=15.0, author=message.author)
-                            answer = formatMessage(answer)
-
-                            if answer == 'yes':
-                                statResponse = " "
-                                leagueController.acquireCurrentPlayedChampionStats()
-                                championStatList = leagueController.acquireSpecificBestPlayedChampionStats()
-
-                                for championStat in championStatList:
-                                    statResponse += championStat + "\n"
-
-                                await bot.send_message(message.channel, statResponse)
-
-                            else:
-                                pass
-
+                        else:
+                            pass
 bot.run(token)
 
