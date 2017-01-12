@@ -117,7 +117,7 @@ class LeagueController():
 
 
     def requestChampionData(self,championName):
-        URL = 'http://ddragon.leagueoflegends.com/cdn/5.14.1/data/en_US/champion/'+championName+'.json'
+        URL = 'http://ddragon.leagueoflegends.com/cdn/7.1.1/data/en_US/champion/'+championName+'.json'
         championData = requests.get(URL)
         championDataJson = championData.json()
         championInformation = ChampionInformation.ChampionInformation(championDataJson,championName)

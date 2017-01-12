@@ -191,8 +191,7 @@ async def on_message(message):
 
                     await bot.send_message(message.channel, response)
 
-                    await bot.send_message(message.channel,
-                                           "\n do you want to get more information on these champions? yes/no")
+                    await bot.send_message(message.channel, "\n do you want to get more information on these champions? yes/no")
 
                     answer = await bot.wait_for_message(timeout=15.0, author=message.author)
                     answer = formatMessage(answer)
