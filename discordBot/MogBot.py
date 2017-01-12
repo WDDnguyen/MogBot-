@@ -118,6 +118,7 @@ async def on_message(message):
         if leagueSubCommand[0:2] == '-c':
             try:
                 championName = capitalize(leagueValue)
+                leagueController.acquireCurrentPatchVersion()
                 leagueController.requestChampionData(championName)
 
                 if leagueSubCommand[2:] == 'stats':

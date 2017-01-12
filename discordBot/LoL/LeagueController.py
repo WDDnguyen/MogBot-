@@ -5,6 +5,7 @@ from discordBot.LoL import ChampionInformation
 
 class LeagueController():
     APIKey = LoLAPIKey.acquireAPIKey()
+    currentPatch = None
     championInformation = None
     summonerProfile = None
     currentPlayedChampionStats = None
@@ -107,6 +108,9 @@ class LeagueController():
         return specificPlayedChampionStatsList
 
 
+#MATCH HISTORY FUNCTIONS PLACE HOLDER
+
+
 # CHAMPION FUNCTIONS
     def requestChampionName(self,ID):
         URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/'+ID+'?api_key='+self.APIKey
@@ -115,9 +119,15 @@ class LeagueController():
         championName = championNameRequestJson['name']
         return championName
 
+    def acquireCurrentPatchVersion(self):
+        URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key='+self.APIKey
+        patchVersionList = requests.get(URL)
+        patchVersionListJson = patchVersionList.json()
+        currentPatch = patchVersionListJson[0]
+        self.currentPatch = currentPatch
 
     def requestChampionData(self,championName):
-        URL = 'http://ddragon.leagueoflegends.com/cdn/7.1.1/data/en_US/champion/'+championName+'.json'
+        URL = 'http://ddragon.leagueoflegends.com/cdn/'+self.currentPatch+'/data/en_US/champion/'+championName+'.json'
         championData = requests.get(URL)
         championDataJson = championData.json()
         championInformation = ChampionInformation.ChampionInformation(championDataJson,championName)
@@ -139,6 +149,7 @@ class LeagueController():
         championSkinNumber = self.championInformation.acquireChampionSkinNumber(skinName)
         URL = 'http://ddragon.leagueoflegends.com/cdn/img/champion/splash/'+championName+'_'+str(championSkinNumber)+'.jpg'
         return URL
+
 
 #Unit Testing
 def main():
