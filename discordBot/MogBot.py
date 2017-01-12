@@ -6,7 +6,7 @@ from discordBot.LoL import LeagueController
 import datetime
 import json
 
-token = Token.acquirechocoBotToken()
+token = Token.acquireToken()
 bot = discord.Client()
 
 magicConchShellFunction = MagicConchShell()
@@ -14,17 +14,14 @@ openWeatherController = OpenWeatherController()
 leagueController = LeagueController.LeagueController()
 
 listOfCommands = {'!magic','!weather', '!league'}
-listOfMagicConchShellCommands = {}
-listOfWeatherCommands = {'!celsius','!fahrenheit','!current','!forecast'}
-listOfLeagueCommands = {'!champion','!summoner'}
-listOfChampionCommands = {'!skin','!stats','!lore',}
-listOfSummonerCommands = {'!most','!best'}
 
 def capitalize(line):
     return ' '.join(s[0].upper() + s[1:] for s in line.split(' '))
 
-def formatAnswer(answer):
-    return str(answer.content).lower()
+def formatMessage(message):
+    formatedMessage = str(message.content).lower()
+    formatedMessage = ' '.join(formatedMessage.split())
+    return formatedMessage
 
 @bot.event
 async def on_ready():
@@ -40,26 +37,12 @@ async def on_message(message):
         return
 
 #HELP COMMAND
-
     if message.content.startswith('!bot'):
         response = "\n"
         for item in listOfCommands :
             response += item + "\n"
 
-            if item == '!weather':
-                for item in listOfWeatherCommands:
-                    response += "        - " + item + "\n"
-            if item == '!league':
-                for item in listOfLeagueCommands:
-                    response += "        - " + item + "\n"
-                    if item == '!champion':
-                        for item in listOfChampionCommands:
-                            response += "                - " + item + "\n"
-                    if item == '!summoner':
-                        for item in listOfSummonerCommands:
-                            response += "                - " + item + "\n"
-
-        await bot.send_message(message.channel,"Here's a list of commands I can execute :" + response)
+        await bot.send_message(message.author,"Here's a list of commands I can execute :" + response)
 
 #MAGIC CONCH SHELL MODE
     elif message.content.startswith('!magic'):
@@ -73,89 +56,60 @@ async def on_message(message):
             response = magicConchShellFunction.responseToCall()
             await bot.send_message(message.channel, str(response))
 
-
 #WEATHER MODE
     elif message.content.startswith('!weather'):
-        await bot.send_message(message.channel, "Which weather command do you want me to execute?")
+        print(message.content)
+        messageComponentList = formatMessage(message).split(' ', 2)
+        weatherCommand = messageComponentList[0]
+        weatherSubCommand = messageComponentList[1]
+        weatherValue = messageComponentList[2]
+        print(messageComponentList)
 
-        ask = await bot.wait_for_message(timeout = 15.0, author = message.author)
-        ask = formatAnswer(ask)
+        if weatherSubCommand == '-c':
+            try:
+                value = float(weatherValue)
+                fahrenheitResponse = openWeatherController.celsiusToFahrenheit(value)
+                await bot.send_message(message.channel, str(fahrenheitResponse))
 
-        if ask is None :
-            await bot.send_message(message.channel,"There was no command for weather")
+            except ValueError:
+                await bot.send_message(message.channel, "This isn't an numerical value, please try again")
 
-        else :
-            if ask == '!celsius':
-                await bot.send_message(message.channel, "What is the value of fahrenheit to convert to celsius ?")
+        elif weatherSubCommand == '-f':
+            try:
+                value = float(weatherValue)
+                response = openWeatherController.fahrenheitToCelsius(value)
+                await bot.send_message(message.channel, str(response))
 
-                value = await bot.wait_for_message(timeout=15.0, author = message.author)
-                if value is None:
-                    await bot.send_message(message.channel,"There was no message")
-                else:
-                    try:
-                        value = float(value.content)
-                        response = openWeatherController.celsiusToFahrenheit(value)
-                        await bot.send_message(message.channel, str(response))
+            except ValueError:
+                await bot.send_message(message.channel, "This isn't an numerical value, please try again")
 
-                    except ValueError:
-                        await bot.send_message(message.channel, "This isn't an numerical value, please try again")
+        elif weatherSubCommand == '-cur':
 
-            elif ask == '!fahrenheit':
-                await bot.send_message(message.channel, "What is the value of celsius to convert to fahrenheit?")
+            valueList = weatherValue.split(',',1)
+            cityName = valueList[0]
+            areaName = valueList[1]
 
-                value = await bot.wait_for_message(timeout=15.0, author=message.author)
-                if value is None:
-                    await bot.send_message(message.channel, "There was no message")
-                else:
-                    try:
-                        value = float(value.content)
-                        response = openWeatherController.fahrenheitToCelsius(value)
-                        await bot.send_message(message.channel, str(response))
+            currentResponse = openWeatherController.currentWeather(cityName,areaName)
+            print(currentResponse)
 
-                    except ValueError:
-                        await bot.send_message(message.channel, "This isn't an numerical value, please try again")
+            await bot.send_message(message.channel, currentResponse)
 
-            elif ask == '!current' :
-                await bot.send_message(message.channel, "For which city do you want to get the current statistic ? ex: Norfolk,US")
+        elif weatherSubCommand == '-for' :
 
-                value = await bot.wait_for_message(timeout=15.0, author=message.author)
-                if value is None:
-                    await bot.send_message(message.channel, "There was no message")
-                else:
-                    value = formatAnswer(value)
-                    valueList = value.split(',',1 )
-                    cityName = valueList[0]
-                    areaName = valueList[1]
+            valueList = weatherValue.split(',', 1)
+            cityName = valueList[0]
+            areaName = valueList[1]
 
-                    response = openWeatherController.currentWeather(cityName,areaName)
-                    print(response)
-
-                    await bot.send_message(message.channel, response)
-
-            elif ask == '!forecast' :
-                await bot.send_message(message.channel, "For which city do you want the forecast? ex :Norfolk,US")
-
-                value = await bot.wait_for_message(timeout=15.0, author=message.author)
-                if value is None:
-                    await bot.send_message(message.channel, "There was no message")
-                else:
-                    value = formatAnswer(value)
-                    valueList = value.split(',', 1)
-                    cityName = valueList[0]
-                    areaName = valueList[1]
-
-                    response = openWeatherController.forecastWeather(cityName, areaName)
-                    index = 0
-                    for item in response :
-                        await bot.send_message(message.channel,datetime.datetime.now() + datetime.timedelta(days=index))
-                        await bot.send_message(message.channel, item)
-                        index += 1
+            forecastResponse = openWeatherController.forecastWeather(cityName, areaName)
+            index = 0
+            for item in forecastResponse :
+                await bot.send_message(message.channel, str(datetime.datetime.now() + datetime.timedelta(days=index)) + '\n' + item.get_string())
+                index += 1
 #League Mode
     elif message.content.startswith('!league'):
         await bot.send_message(message.channel, "Which league command do you want to execute?")
-
         ask = await bot.wait_for_message(timeout=15.0, author=message.author)
-        ask = formatAnswer(ask)
+        ask = formatMessage(ask)
 
         if ask is None:
             await bot.send_message(message.channel, "There was no command for weather")
@@ -172,7 +126,7 @@ async def on_message(message):
 
                 else:
                     try :
-                        championName = formatAnswer(championName)
+                        championName = formatMessage(championName)
                         championName = capitalize(championName)
                         leagueController.requestChampionData(championName)
 
@@ -183,7 +137,7 @@ async def on_message(message):
                         if command is None:
                             await bot.send_message(message.channel, "There was no message")
                         else:
-                            command = formatAnswer(command)
+                            command = formatMessage(command)
                             if command == '!stats':
                                 response = "Stats for : " + leagueController.championInformation.displayChampionName() + " \n\n" + leagueController.acquireChampionStats()
                                 await bot.send_message(message.channel, response)
@@ -201,12 +155,12 @@ async def on_message(message):
                                 await bot.send_message(message.channel, "Do you want the image of this skin? yes/no")
 
                                 answer = await bot.wait_for_message(timeout=15.0, author=message.author)
-                                answer = formatAnswer(answer)
+                                answer = formatMessage(answer)
 
                                 if answer == 'yes':
                                     await bot.send_message(message.channel, "which one?")
                                     skinName = await bot.wait_for_message(timeout=15.0, author= message.author)
-                                    skinName = formatAnswer(skinName)
+                                    skinName = formatMessage(skinName)
 
                                     URL = leagueController.acquireChampionSkinImage(championName,skinName)
                                     response = URL
@@ -227,7 +181,7 @@ async def on_message(message):
                     await bot.send_message(message.channel, "There was no message")
                 else :
                     try:
-                        summonerInfo = formatAnswer(summonerInfo)
+                        summonerInfo = formatMessage(summonerInfo)
                         valueList = summonerInfo.split(',', 1)
                         summonerName = valueList[0]
                         summonerRegion = valueList[1]
@@ -244,7 +198,7 @@ async def on_message(message):
                         await bot.send_message(message.channel, "There was no message")
 
                     else :
-                        summonerCommand = formatAnswer(summonerCommand)
+                        summonerCommand = formatMessage(summonerCommand)
                         if summonerCommand == '!most':
                             response = "This is " + summonerName + " most played champions for this season : \n"
                             championNameList = leagueController.acquireCurrentMostPlayedChampionNames()
@@ -284,7 +238,7 @@ async def on_message(message):
                             await bot.send_message(message.channel, "\n do you want to get more information on these champions? yes/no")
 
                             answer = await bot.wait_for_message(timeout=15.0, author=message.author)
-                            answer = formatAnswer(answer)
+                            answer = formatMessage(answer)
 
                             if answer == 'yes':
                                 statResponse = " "
