@@ -60,6 +60,7 @@ async def on_message(message):
     elif message.content.startswith('!rnm'):
         await bot.send_message(message.channel, "There is no Season 3")
 
+
 #WEATHER MODE
     elif message.content.startswith('!weather'):
         messageComponentList = formatMessage(message).split(' ', 2)
@@ -182,7 +183,6 @@ async def on_message(message):
 
                         await bot.send_message(message.channel, statResponse)
 
-
                 elif leagueSubCommand[2:] == 'best':
                     response = "This is " + summonerName + " best played champions for this season : \n"
                     championNameList = leagueController.acquireCurrentBestPlayedChampionNames()
@@ -198,7 +198,7 @@ async def on_message(message):
                     answer = formatMessage(answer)
 
                     if answer == 'yes':
-                        statResponse = " "
+                        statResponse = ""
                         leagueController.acquireCurrentPlayedChampionStats()
                         championStatList = leagueController.acquireSpecificBestPlayedChampionStats()
 
@@ -207,9 +207,12 @@ async def on_message(message):
 
                         await bot.send_message(message.channel, statResponse)
 
-
             except json.decoder.JSONDecodeError:
                 await bot.send_message(message.channel, "There is no summoner with that name")
+
+# REDDIT MODE
+    elif message.content.startswith('!reddit'):
+        pass
 
 bot.run(token)
 
