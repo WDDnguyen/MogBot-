@@ -12,7 +12,7 @@ class RedditController():
     def acquireSubredditTopSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         topSubredditResults = []
-        for submission  in subreddit.top(limit=5):
+        for submission  in subreddit.top(limit=3):
             topSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return topSubredditResults
@@ -20,15 +20,15 @@ class RedditController():
     def acquireSubredditHotSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         hotSubredditResults = []
-        for submission in subreddit.hot(limit=5):
+        for submission in subreddit.hot(limit=3):
             hotSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return hotSubredditResults
 
-    def acquireSubRedditNewSubmissions(self,subredditName):
+    def acquireSubredditNewSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         newSubredditResults = []
-        for submission in subreddit.hot(limit=5):
+        for submission in subreddit.new(limit=3):
             newSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return newSubredditResults
@@ -38,6 +38,20 @@ class RedditController():
         topSubredditResults = self.acquireSubredditTopSubmissions(subredditName)
         submissionURLList = []
         for submission in topSubredditResults:
+            submissionURLList.append(submission['url'])
+        return submissionURLList
+
+    def acquireSubredditHotSubmissionsURL(self,subredditName):
+        hotSubredditResults = self.acquireSubredditHotSubmissions(subredditName)
+        submissionURLList = []
+        for submission in hotSubredditResults:
+            submissionURLList.append(submission['url'])
+        return submissionURLList
+
+    def acquireSubredditNewSubmissionsURL(self, subredditName):
+        newSubredditResults = self.acquireSubredditNewSubmissions(subredditName)
+        submissionURLList = []
+        for submission in newSubredditResults:
             submissionURLList.append(submission['url'])
         return submissionURLList
 
@@ -55,7 +69,7 @@ class RedditController():
         return submissionDict
 
 def main():
-    subredditName = 'anime'
+    subredditName = 'games'
     reddit = RedditController()
     topResults = reddit.acquireSubredditTopSubmissions(subredditName)
     for submission in topResults:

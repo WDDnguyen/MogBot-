@@ -220,10 +220,25 @@ async def on_message(message):
         redditValue = messageComponentList[2]
 
         if redditSubCommand == '-top':
-           redditBestSubmissionURL =  redditController.acquireSubredditTopSubmissionsURL(redditValue)
+           redditSubmissionURL =  redditController.acquireSubredditTopSubmissionsURL(redditValue)
            await bot.send_message(message.channel, "Retrieving urls...")
-           for submission in redditBestSubmissionURL:
+           for submission in redditSubmissionURL:
                await bot.send_message(message.channel, submission)
-        
+
+        elif redditSubCommand == '-hot':
+            redditHotSubmissionURL = redditController.acquireSubredditHotSubmissionsURL(redditValue)
+            await bot.send_message(message.channel, "Retrieving urls...")
+            for submission in redditHotSubmissionURL:
+                await bot.send_message(message.channel, submission)
+
+        elif redditSubCommand == '-new':
+            redditNewSubmissionURL = redditController.acquireSubredditNewSubmissionsURL(redditValue)
+            await bot.send_message(message.channel, "Retrieving urls...")
+            for submission in redditNewSubmissionURL:
+                await bot.send_message(message.channel, submission)
+
+        else:
+            await bot.send_message(message.channel, "There is no reddit command for what you typed")
+
 bot.run(token)
 
