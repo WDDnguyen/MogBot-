@@ -110,7 +110,6 @@ class LeagueController():
 
 #MATCH HISTORY FUNCTIONS PLACE HOLDER
 
-
 # CHAMPION FUNCTIONS
     def requestChampionName(self,ID):
         URL = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/'+ID+'?api_key='+self.APIKey
@@ -149,43 +148,3 @@ class LeagueController():
         championSkinNumber = self.championInformation.acquireChampionSkinNumber(skinName)
         URL = 'http://ddragon.leagueoflegends.com/cdn/img/champion/splash/'+championName+'_'+str(championSkinNumber)+'.jpg'
         return URL
-
-
-#Unit Testing
-def main():
-    region = "na"
-    summonerName = "akiducky"
-    summonerID = "24537840"
-    summonerIDList = ['427','421','103']
-
-    controller = LeagueController()
-    summonerJson = controller.requestSummonerData(region,summonerName)
-    print (summonerJson)
-    print ("-------------------------------------------------------")
-    controller.createSummonerInformation(region,summonerName)
-    #print(controller.summonerProfile.displayAllRankedStatistic())
-    #print(controller.summonerProfile.displayMostPlayedRankedChampionOfCurrentSeason())
-    print(controller.acquireCurrentMostPlayedChampionNames())
-    print(controller.acquireCurrentPlayedChampionStats())
-    print(controller.acquireCurrentBestPlayedChampionNames())
-    print("-------------------------------------------------------")
-    print(controller.bestPlayedChampionsIDList)
-    print(controller.mostPlayedChampionsIDList)
-    statList = controller.acquireSpecificBestPlayedChampionStats()
-    for item in statList:
-        print(item)
-
-   # print(controller.summonerProfile.acquireBestCurrentChampionsOfSeason())
-    """championName = 'Bard'
-    championSkinName = 'default'
-    controller.requestChampionData(championName)
-    print(controller.acquireChampionData())
-    print(controller.championInformation.displayChampionName())
-    print(controller.championInformation.displayChampionLore())
-    print(controller.acquireChampionStats())
-    print(controller.acquireChampionSkinName())
-    print(controller.acquireChampionSkinImage(championName,championSkinName))
-    """
-if __name__ == "__main__":
-    main()
-
