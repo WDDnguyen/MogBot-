@@ -225,17 +225,29 @@ async def on_message(message):
            for submission in redditSubmissionURL:
                await bot.send_message(message.channel, submission)
 
+        elif redditSubCommand == '-rtop':
+            redditSubmissionURL = redditController.acquireSubredditRandomTopSubmissionsURL(redditValue)
+            await bot.send_message(message.channel,redditSubmissionURL)
+
         elif redditSubCommand == '-hot':
             redditHotSubmissionURL = redditController.acquireSubredditHotSubmissionsURL(redditValue)
             await bot.send_message(message.channel, "Retrieving urls...")
             for submission in redditHotSubmissionURL:
                 await bot.send_message(message.channel, submission)
 
+        elif redditSubCommand =='-rhot':
+            redditRandomHotSubmissionURL = redditController.acquireSubredditRandomHotSubmissionsURL(redditValue)
+            await bot.send_message(message.channel,redditRandomHotSubmissionURL)
+
         elif redditSubCommand == '-new':
             redditNewSubmissionURL = redditController.acquireSubredditNewSubmissionsURL(redditValue)
             await bot.send_message(message.channel, "Retrieving urls...")
             for submission in redditNewSubmissionURL:
                 await bot.send_message(message.channel, submission)
+
+        elif redditSubCommand == '-rnew':
+            redditRandomNewSubmissionURL = redditController.acquireSubredditRandomNewSubmissionsURL(redditValue)
+            await bot.send_message(message.channel, redditRandomNewSubmissionURL)
 
         else:
             await bot.send_message(message.channel, "There is no reddit command for what you typed")

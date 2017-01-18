@@ -1,5 +1,6 @@
 from discordBot.Reddit import RedditCredentials
 import pprint
+from random import randint
 
 class RedditController():
 
@@ -12,7 +13,7 @@ class RedditController():
     def acquireSubredditTopSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         topSubredditResults = []
-        for submission  in subreddit.top(limit=3):
+        for submission  in subreddit.top(limit=15):
             topSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return topSubredditResults
@@ -20,7 +21,7 @@ class RedditController():
     def acquireSubredditHotSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         hotSubredditResults = []
-        for submission in subreddit.hot(limit=10):
+        for submission in subreddit.hot(limit=15):
             hotSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return hotSubredditResults
@@ -28,7 +29,7 @@ class RedditController():
     def acquireSubredditNewSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         newSubredditResults = []
-        for submission in subreddit.new(limit=3):
+        for submission in subreddit.new(limit=15):
             newSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return newSubredditResults
@@ -39,6 +40,16 @@ class RedditController():
         submissionsSortedByHighestUpvotesList = sorted(submissionList, key=lambda k: k['score'])
         return submissionsSortedByHighestUpvotesList
 
+    def pickRandomSubmission(self,submissionList):
+        randomPickedSubmission = submissionList[randint(0, len(submissionList) - 1)]
+        return randomPickedSubmission
+
+#Top submissions
+    def acquireSubredditRandomTopSubmissionsURL(self,subredditName):
+        topSubredditResults = self.acquireSubredditTopSubmissions(subredditName)
+        randomTopSubmissionURL = self.pickRandomSubmission(topSubredditResults)['url']
+        return randomTopSubmissionURL
+
     def acquireSubredditTopSubmissionsURL(self,subredditName):
         topSubredditResults = self.acquireSubredditTopSubmissions(subredditName)
         submissionURLList = []
@@ -46,12 +57,25 @@ class RedditController():
             submissionURLList.append(submission['url'])
         return submissionURLList
 
+#Hot submissions
+    def acquireSubredditRandomHotSubmissionsURL(self,subredditName):
+        hotSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditHotSubmissions(subredditName))
+        randomHotSubmissionURL = self.pickRandomSubmission(hotSubredditResults)['url']
+        return randomHotSubmissionURL
+
     def acquireSubredditHotSubmissionsURL(self,subredditName):
         hotSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditHotSubmissions(subredditName))
         submissionURLList = []
         for submission in hotSubredditResults:
             submissionURLList.append(submission['url'])
         return submissionURLList
+
+#new submissions
+
+    def acquireSubredditRandomNewSubmissionsURL(self,subredditName):
+        newSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditNewSubmissions(subredditName))
+        randomNewSubmissionURL = self.pickRandomSubmission(newSubredditResults)['url']
+        return randomNewSubmissionURL
 
     def acquireSubredditNewSubmissionsURL(self, subredditName):
         newSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditNewSubmissions(subredditName))
@@ -87,11 +111,6 @@ def main():
 
     sortedByHighestUpvoteList = sorted(submissionList, key=lambda k: k['score'])
     print(sortedByHighestUpvoteList)
-
-
-
-
-
 
 if __name__ == "__main__":
     main()
