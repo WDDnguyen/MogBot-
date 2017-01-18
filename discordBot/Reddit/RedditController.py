@@ -20,7 +20,7 @@ class RedditController():
     def acquireSubredditHotSubmissions(self,subredditName):
         subreddit = self.reddit.subreddit(subredditName)
         hotSubredditResults = []
-        for submission in subreddit.hot(limit=3):
+        for submission in subreddit.hot(limit=10):
             hotSubredditResults.append(self.createSubmissionDictionary(submission))
 
         return hotSubredditResults
@@ -34,6 +34,11 @@ class RedditController():
         return newSubredditResults
 
 #extract submissions
+
+    def extractSubmissionsByUpvotes(self,submissionList):
+        submissionsSortedByHighestUpvotesList = sorted(submissionList, key=lambda k: k['score'])
+        return submissionsSortedByHighestUpvotesList
+
     def acquireSubredditTopSubmissionsURL(self,subredditName):
         topSubredditResults = self.acquireSubredditTopSubmissions(subredditName)
         submissionURLList = []
@@ -42,14 +47,14 @@ class RedditController():
         return submissionURLList
 
     def acquireSubredditHotSubmissionsURL(self,subredditName):
-        hotSubredditResults = self.acquireSubredditHotSubmissions(subredditName)
+        hotSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditHotSubmissions(subredditName))
         submissionURLList = []
         for submission in hotSubredditResults:
             submissionURLList.append(submission['url'])
         return submissionURLList
 
     def acquireSubredditNewSubmissionsURL(self, subredditName):
-        newSubredditResults = self.acquireSubredditNewSubmissions(subredditName)
+        newSubredditResults = self.extractSubmissionsByUpvotes(self.acquireSubredditNewSubmissions(subredditName))
         submissionURLList = []
         for submission in newSubredditResults:
             submissionURLList.append(submission['url'])
@@ -72,8 +77,21 @@ def main():
     subredditName = 'games'
     reddit = RedditController()
     topResults = reddit.acquireSubredditTopSubmissions(subredditName)
-    for submission in topResults:
-        print (submission['thumbnail'])
+    submissionList = []
+    submission1 = { 'title' : 'title1', 'score' : 60}
+    submission2 = {'title': 'title2', 'score': 20}
+    submission3 = {'title': 'title3', 'score': 40}
+    submissionList.append(submission1)
+    submissionList.append(submission2)
+    submissionList.append(submission3)
+
+    sortedByHighestUpvoteList = sorted(submissionList, key=lambda k: k['score'])
+    print(sortedByHighestUpvoteList)
+
+
+
+
+
 
 if __name__ == "__main__":
     main()
